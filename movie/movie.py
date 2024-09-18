@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, jsonify, make_response
 import json
 from werkzeug.exceptions import NotFound
 from flask_swagger_ui import get_swaggerui_blueprint
-import os 
+import os
+import uuid
 
 app = Flask(__name__)
 
@@ -10,67 +11,85 @@ PORT = 3200
 HOST = '0.0.0.0'
 
 with open('{}/databases/movies.json'.format("."), 'r') as jsf:
-   movies = json.load(jsf)["movies"]
+    movies_data = json.load(jsf)["movies"]
 
-# root message
+# Convert movies to a dictionary for faster lookup
+movies = {movie['id']: movie for movie in movies_data}
+
 @app.route("/", methods=['GET'])
 def home():
-    return make_response("<ph1 style='color:blue'>Welcome to the Movie service!</ph1>",200)
+    return make_response("<h1 style='color:blue'>Welcome to the Movie service!</h1>", 200)
 
-# Flask routes for your Movie service
-@app.route('/movies', methods=['GET'])
-def get_all_movies():
-    """Retourne tous les films."""
-    return jsonify(movies)
+@app.route("/json", methods=['GET'])
+def get_json():
+    return jsonify({"movies": list(movies.values())})
 
-@app.route('/movies/<int:movie_id>', methods=['GET'])
-def get_movie_by_id(movie_id):
-    """Retourne un film spécifique par ID."""
-    movie = next((movie for movie in movies if movie['id'] == movie_id), None)
+@app.route("/movies/<string:movieid>", methods=['GET'])
+def get_movie_byid(movieid):
+    movie = movies.get(movieid)
     if movie:
         return jsonify(movie)
-    return jsonify({"error": "Film non trouvé"}), 404
+    return make_response(jsonify({"error": "Movie not found"}), 400)
 
-@app.route('/movies/genre/<genre>', methods=['GET'])
-def get_movies_by_genre(genre):
-    """Retourne tous les films d'un genre spécifique."""
-    movies = [movie for movie in movies if movie['genre'].lower() == genre.lower()]
-    return jsonify(movies)
-
-@app.route('/movies/director/<director>', methods=['GET'])
-def get_movies_by_director(director):
-    """Retourne tous les films d'un certain réalisateur."""
-    movies = [movie for movie in movies if movie['director'].lower() == director.lower()]
-    return jsonify(movies)
-
-@app.route('/help', methods=['GET'])
-def get_help():
-    """Retourne une liste des routes disponibles dans le service Movie."""
-    routes = {
-        "GET /movies": "Récupère tous les films",
-        "GET /movies/<movie_id>": "Récupère un film par ID",
-        "GET /movies/genre/<genre>": "Récupère les films par genre",
-        "GET /movies/director/<director>": "Récupère les films par réalisateur",
-        "GET /help": "Retourne la liste des points d'entrée"
+@app.route("/movies/<string:movieid>", methods=['POST'])
+def create_movie(movieid):
+    if movieid in movies:
+        return make_response(jsonify({"error": "Movie already exists"}), 409)
+    
+    content = request.json
+    movie = {
+        "id": movieid,
+        "title": content["title"],
+        "rating": content["rating"],
+        "director": content["director"]
     }
-    return jsonify(routes)
+    movies[movieid] = movie
+    return jsonify(movie), 200
+
+@app.route("/movies/<string:movieid>", methods=['DELETE'])
+def del_movie(movieid):
+    if movieid in movies:
+        del movies[movieid]
+        return make_response("", 200)
+    return make_response(jsonify({"error": "Movie not found"}), 400)
+
+@app.route("/moviesbytitle", methods=['GET'])
+def get_movie_bytitle():
+    title = request.args.get('title')
+    if not title:
+        return make_response(jsonify({"error": "Title parameter is required"}), 400)
+    
+    for movie in movies.values():
+        if movie['title'].lower() == title.lower():
+            return jsonify(movie)
+    
+    return make_response(jsonify({"error": "Movie not found"}), 400)
+
+@app.route("/movies/<string:movieid>/<int:rate>", methods=['PUT'])
+def update_movie_rating(movieid, rate):
+    if movieid not in movies:
+        return make_response(jsonify({"error": "Movie not found"}), 400)
+    
+    if rate < 0 or rate > 10:
+        return make_response(jsonify({"error": "Rating must be between 0 and 10"}), 400)
+    
+    movies[movieid]['rating'] = rate
+    return make_response("", 200)
 
 # Swagger UI configuration
-SWAGGER_URL = '/api/docs'  # Swagger UI endpoint
-API_URL = os.path.join(os.getcwd(), 'UE-archi-distribuees-Movie-1.0.0-resolved.yaml')
+SWAGGER_URL = '/api/docs'
+API_URL = '/static/swagger.yaml'  # This should be the path to your OpenAPI YAML file
 
 swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,  # Swagger UI static path
-    API_URL,  # OpenAPI spec path
-    config={  # Swagger UI config overrides
+    SWAGGER_URL,
+    API_URL,
+    config={
         'app_name': "Movie Service API"
     }
 )
 
-# Register Swagger UI blueprint
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == "__main__":
-    #p = sys.argv[1]
-    print("Server running in port %s"%(PORT))
+    print(f"Server running on port {PORT}")
     app.run(host=HOST, port=PORT)
