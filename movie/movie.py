@@ -14,7 +14,7 @@ with open('{}/databases/movies.json'.format("."), 'r') as jsf:
 # root message
 @app.route("/", methods=['GET'])
 def home():
-    return make_response("<h1 style='color:blue'>Welcome to the Movie service!</h1>",200)
+    return make_response("<ph1 style='color:blue'>Welcome to the Movie service!</ph1>",200)
 
 if __name__ == "__main__":
     #p = sys.argv[1]
