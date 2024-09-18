@@ -1,0 +1,87 @@
+{
+	"info": {
+		"_postman_id": "f37a1469-b6e3-4964-bb43-0a43c1e332f8",
+		"name": "booking-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38417926",
+		"_collection_link": "https://imt-team.postman.co/workspace/IMT-Team-Workspace~2ce78096-dc02-47d9-871e-82b4165b1594/collection/38417926-f37a1469-b6e3-4964-bb43-0a43c1e332f8?action=share&source=collection_link&creator=38417926"
+	},
+	"item": [
+		{
+			"name": "get-bookings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3201/bookings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3201",
+					"path": [
+						"bookings"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET http://localhost:3201/bookings"
+			},
+			"response": []
+		},
+		{
+			"name": "get-booking-by-user-id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3201/bookings/chris_rivers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3201",
+					"path": [
+						"bookings",
+						"chris_rivers"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET http://localhost:3201/bookings/chris_rivers"
+			},
+			"response": []
+		},
+		{
+			"name": "create-booking-by-user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"date\": \"20151202\",\n    \"movieid\": \"276c79ec-a26a-40a6-b3d3-fb242a5947b6\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3201/bookings/chris_rivers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3201",
+					"path": [
+						"bookings",
+						"chris_rivers"
+					]
+				},
+				"description": "Generated from cURL: curl -X POST http://localhost:3201/bookings/chris_rivers \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"date\": \"20151202\",\n    \"movieid\": \"276c79ec-a26a-40a6-b3d3-fb242a5947b6\"\n  }'"
+			},
+			"response": []
+		}
+	]
+}
