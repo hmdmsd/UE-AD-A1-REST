@@ -1,0 +1,88 @@
+{
+	"info": {
+		"_postman_id": "9b06f8c5-7dde-40f6-87bd-6999436cc001",
+		"name": "showtime",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19457210"
+	},
+	"item": [
+		{
+			"name": "Endpoint d'accueil (/)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3202/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3202",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Endpoint pour récupérer tous les horaires de films (/showtimes)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3202/showtimes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3202",
+					"path": [
+						"showtimes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Endpoint pour récupérer les films par date (/showmovies/{date})",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3202/showmovies/20151201",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3202",
+					"path": [
+						"showmovies",
+						"20151201"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Endpoint pour une date inexistante (pour tester une erreur 404)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3202/showmovies/20230920",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3202",
+					"path": [
+						"showmovies",
+						"20230920"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
